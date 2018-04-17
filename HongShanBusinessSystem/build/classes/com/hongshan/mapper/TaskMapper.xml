@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongshan.mapper.TaskMapper">
+
+	<insert id="addTask" parameterType="com.hongshan.pojo.Task">
+		INSERT INTO task
+		VALUES(
+				#{task_id},
+				#{user_relation_id},
+				#{task_assigner_target},
+				#{task_ideal_target},
+				#{task_real_completion},
+				#{createtime}
+			  );
+	</insert>
+
+	<update id="updateTaskByTaskID" parameterType="com.hongshan.pojo.Task">
+		UPDATE task
+		SET
+			task_assigner_target = #{task_assigner_target},
+			task_ideal_target = #{task_ideal_target},
+			task_real_completion = #{task_real_completion}
+		WHERE user_relation_id = #{user_relation_id};
+	</update>
+
+	<select id="selectTaskMultiCondition" parameterType="com.hongshan.pojo.Task" resultType="com.hongshan.pojo.Task">
+		SELECT * FROM task
+		<include refid="selectSQL" />
+	</select>
+	
+	<sql id="selectSQL">
+		<where>
+			<if test="task_id != null and task_id != ''">
+				AND task_id = #{task_id}
+			</if>
+			<if test="user_relation_id != null and user_relation_id != ''">
+				AND user_relation_id = #{user_relation_id}
+			</if>
+			<if test="task_assigner_target != null task_assigner_target != ''">
+				AND task_assigner_target = #{task_assigner_target}
+			</if>
+			<if test="task_ideal_target != null and task_ideal_target != ''">
+				AND task_ideal_target = #{task_ideal_target}
+			</if>
+			<if test="task_real_completion != and task_real_completion != ''">
+				AND task_real_completion = #{task_real_completion}
+			</if>
+		</where>
+	</sql>
+	
+</mapper>

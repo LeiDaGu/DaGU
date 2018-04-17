@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongshan.mapper.ProjectTrackingMapper">
+
+    <sql id="proTra">
+      project_tracking_id,project_id,project_tracking_details,create_time
+    </sql>
+
+    <insert id="addProjectTracking">
+        INSERT INTO project_tracking(<include refid="proTra"/>)
+        VALUES
+        (#{project_tracking_id},#{project_id},#{project_tracking_details},#{create_time})
+    </insert>
+
+    <select id="selectProjectTracking" parameterType="java.lang.String" resultType="com.hongshan.pojo.ProjectTracking">
+      SELECT * FROM project_tracking WHERE project_tracking_id = #{project_tracking_id}
+    </select>
+
+    <select id="selectProjectTrackingByProjectId" parameterType="java.lang.String" resultType="com.hongshan.pojo.ProjectTracking">
+      select * from project_tracking where project_id = #{project_id}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongshan.mapper.CustomerMapper">
+	
+	<insert id="addCustomer" parameterType="com.hongshan.pojo.Customer">
+		INSERT INTO
+		customer( 
+				  customer_id,
+				  user_id ,
+				  customer_grade , 
+				  customer_name , 
+				  customer_origin ,
+				  customer_telephone , 
+				  customer_phone ,
+				  customer_qq , 
+				  customer_weixin , 
+				  customer_city , 
+				  customer_address , 
+				  create_time
+		)
+		VALUES( 
+				#{customer_id},
+				#{user_id} , 
+				#{customer_grade} , 
+				#{customer_name} , 
+				#{customer_origin} , 
+				#{customer_telephone} ,
+				#{customer_phone} ,
+			    #{customer_qq} , 
+			    #{customer_weixin} , 
+			    #{customer_city} , 
+			    #{customer_address} , 
+			    #{create_time}
+		);
+	</insert>
+	
+	<update id="updateCustomer" parameterType="com.hongshan.pojo.Customer">
+		UPDATE customer
+		SET customer_grade = #{customer_grade} ,
+			customer_name = #{customer_name} ,
+			customer_origin = #{customer_origin} ,
+			customer_telephone = #{customer_telephone} ,
+			customer_phone = #{customer_phone} ,
+			customer_qq = #{customer_qq} ,
+			customer_weixin = #{customer_weixin} ,
+			customer_city = #{customer_city} ,
+			customer_address = #{customer_address}
+		WHERE customer_id = #{customer_id};
+	</update>
+
+	<select id="selectCustomers" resultType="com.hongshan.pojo.Customer">
+		SELECT * FROM customer;
+	</select> 
+
+	<select id="selectCustomerByID" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.Customer">
+		SELECT * FROM customer
+		WHERE customer_id = #{customer_id};
+	</select>
+
+	<select id="selectCustomerByName" parameterType="com.hongshan.pojo.Customer"
+		resultType="com.hongshan.pojo.Customer">
+		SELECT * FROM customer
+		WHERE customer_name = #{customer_name};
+	</select>
+
+	<select id="selectCustomerByUserId" resultType="com.hongshan.pojo.Customer" parameterType="java.lang.String">
+		SELECT * FROM customer
+		WHERE user_id = #{user_id};
+	</select>
+
+	<sql id="selectSQL">
+		<where>
+			<if test="user_id != null and user_id != ''">
+				AND user_id = #{user_id}
+			</if>
+			<if test="customer_grade != null and customer_grade != ''">
+				AND customer_grade = #{customer_grade}
+			</if>
+			<if test="customer_name !=null and customer_name != ''">
+				AND customer_name LIKE '%${customer_name}%'
+			</if>
+			<if test="customer_origin !=null and customer_origin != ''">
+				AND customer_origin LIKE '%${customer_origin}%'
+			</if>
+			<if test="customer_phone !=null and customer_phone != ''">
+				AND customer_phone LIKE '%${customer_phone}%'
+			</if>
+			<if test="customer_telephone !=null and customer_telephone != ''">
+				AND customer_telephone LIKE '%${customer_telephone}%'
+			</if>
+			<if test="customer_qq !=null and customer_qq != ''">
+				AND customer_qq LIKE '%${customer_qq}%'
+			</if>
+			<if test="customer_weixin !=null and customer_weixin != ''">
+				AND customer_weixin LIKE '%${customer_weixin}%'
+			</if>
+			<if test="customer_city !=null and customer_city != ''">
+				AND customer_city LIKE '%${customer_city}%'
+			</if>
+			<if test="customer_address !=null and customer_address != ''">
+				AND customer_address LIKE '%${customer_address}%'
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectCustomersByMultiCondition" resultType="com.hongshan.pojo.Customer"  parameterType="com.hongshan.pojo.Customer">
+		SELECT * FROM customer
+		<include refid="selectSQL"/>
+	</select>
+</mapper>

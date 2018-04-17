@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongshan.mapper.ProjectMapper">
+
+	<insert id="addProject" parameterType="com.hongshan.pojo.Project">
+		INSERT INTO
+		project (
+		project_id,
+		customer_id ,
+		project_name ,
+		project_platform ,
+		project_number ,
+		project_budget ,
+		project_quote ,
+		project_req ,
+		project_state ,
+		create_time
+		)
+		VALUES (
+		#{project_id},
+		#{customer_id} ,
+		#{project_name} ,
+		#{project_platform} ,
+		#{project_number} ,
+		#{project_budget} ,
+		#{project_quote} ,
+		#{project_req} ,
+		#{project_state}
+		,
+		#{create_time}
+		);
+	</insert>
+
+	<update id="updateProject" parameterType="java.lang.String">
+		UPDATE project
+		SET
+		project_name = #{project_name} ,
+		project_platform = #{project_platform}
+		,
+		project_number = #{project_number} ,
+		project_budget =
+		#{project_budget} ,
+		project_quote = #{project_quote} ,
+		project_req =
+		#{project_req} ,
+		project_state = #{project_state},
+		project_manager =
+		#{project_manager}
+		WHERE project_id = #{project_id};
+	</update>
+
+	<select id="selectProject" resultType="com.hongshan.pojo.Project">
+		SELECT * FROM project;
+	</select>
+
+	<select id="selectProjectByID" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.Project">
+		SELECT * FROM project
+		WHERE project_id = #{project_id};
+	</select>
+
+	<select id="selectProjectByName" parameterType="com.hongshan.pojo.Project"
+		resultType="com.hongshan.pojo.Project">
+		SELECT * FROM project
+		WHERE project_name = #{project_name};
+	</select>
+
+	<select id="selectProjectByCustomerId" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.Project">
+		SELECT * FROM project
+		WHERE customer_id = #{customer_id};
+	</select>
+
+	<select id="selectProjectByUserID" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.Project">
+		SELECT
+		p.project_id,
+		p.customer_id,
+		p.project_name,
+		p.project_platform,
+		p.project_number,
+		p.project_budget,
+		p.project_quote,
+		p.project_req,
+		p.project_state,
+		p.project_manager,
+		p.create_time
+		FROM project p,user u ,customer c
+		WHERE p.customer_id = c.customer_id
+		AND u.user_id = c.user_id
+		AND u.user_id = #{user_id}
+	</select>
+
+	<select id="selectProjectByMultiCondition" resultType="com.hongshan.pojo.Project"
+		parameterType="com.hongshan.pojo.Project">
+		SELECT * FROM project
+		<include refid="selectSQL" />
+	</select>
+
+	<sql id="selectSQL">
+		<where>
+			<if test="customer_id != null and customer_id != ''">
+				AND customer_id = #{customer_id}
+			</if>
+			<if test="project_name != null and project_name != ''">
+				AND project_name LIKE '%${project_name}%'
+			</if>
+			<if test="project_platform != null and project_platform != ''">
+				AND project_platform LIKE '%${project_platform}%'
+			</if>
+			<if test="project_number != null and project_number != ''">
+				AND project_number LIKE '%${project_number}%'
+			</if>
+			<if test="project_budget != null and project_budget != ''">
+				AND project_budget LIKE '%${project_budget}%'
+			</if>
+			<if test="project_quote != null and project_quote != ''">
+				AND project_quote LIKE '%${project_quote}%'
+			</if>
+			<if test="project_req != null and project_req != ''">
+				AND project_req LIKE '%${project_req}%'
+			</if>
+			<if test="project_state != null and project_state != ''">
+				AND project_state LIKE '%${project_state}%'
+			</if>
+			<if test="project_manager != null and project_manager != ''">
+				AND project_manager LIKE '%${project_manager}%'
+			</if>
+		</where>
+	</sql>
+</mapper>

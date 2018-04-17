@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongshan.mapper.UserMapper">
+
+	<sql id="usersql">
+		user_id,role,user_account,user_name,user_password,user_islock,create_time
+	</sql>
+
+	<insert id="addUser">
+		insert INTO USER(
+		<include refid="usersql" />
+		)
+		VALUES
+		(#{user_id},#{role},#{user_account},#{user_name},#{user_password},#{user_islock},#{create_time})
+	</insert>
+
+	<update id="updateUser">
+		UPDATE USER SET
+		role = #{role},
+		user_account =
+		#{user_account},
+		user_name = #{user_name},
+		user_password =
+		#{user_password},
+		user_islock = #{user_islock},
+		create_time =
+		#{create_time}
+		WHERE user_id = #{user_id};
+	</update>
+
+	<select id="selectUsers" resultType="com.hongshan.pojo.User">
+		SELECT * FROM USER;
+	</select>
+
+	<select id="selectUserByID" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.User">
+		SELECT * FROM USER WHERE user_id = #{user_id};
+	</select>
+
+	<select id="selectUserByAccount" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.User">
+		SELECT * FROM USER WHERE user_account = #{user_account};
+	</select>
+
+	<select id="selectUserByRole" parameterType="java.lang.String"
+		resultType="com.hongshan.pojo.User">
+		SELECT * FROM USER WHERE role = #{role};
+	</select>
+
+	<select id="selectUsersByMultiCondition" resultType="com.hongshan.pojo.User"
+		parameterType="com.hongshan.pojo.User">
+		SELECT * FROM USER
+		<include refid="selectSQL" />
+	</select>
+
+	<sql id="selectSQL">
+		<where>
+			<if test="user_account != null and user_account != ''">
+				AND user_account LIKE '%${user_account}%'
+			</if>
+			<if test="user_name != null and user_name != ''">
+				AND user_name LIKE '%${user_name}%'
+			</if>
+			<if test="user_islock != null and user_islock != ''">
+				AND user_islock = #{user_islock}
+			</if>
+		</where>
+	</sql>
+
+	<!-- Map -->
+	<resultMap id="UserMap" type="com.hongshan.pojo.User">
+		<id column="user_id" property="user_id" />
+		<result column="role" property="role" />
+		<result column="user_account" property="user_account" />
+		<result column="user_name" property="user_name" />
+		<result column="user_password" property="user_password" />
+		<result column="user_islock" property="user_islock" />
+
+		<collection property="userRelations" ofType="com.hongshan.pojo.UserRelation">
+			<id column="user_relation_id" property="user_relation_id" />
+			<result column="user_id" property="user_id" />
+			<result column="user_parent_id" property="user_parent_id" />
+
+			<collection property="tasks" ofType="com.hongshan.pojo.Task">
+				<id column="task_id" property="task_id" />
+				<result column="user_relation_id" property="user_relation_id" />
+				<result column="task_assigner_target" property="task_assigner_target" />
+				<result column="task_ideal_target" property="task_ideal_target" />
+				<result column="task_real_completion" property="task_real_completion" />
+				<result column="createtime" property="createtime" />
+			</collection>
+		</collection>
+	</resultMap>
+
+	<!-- 多条件跨表查询Map -->
+	<select id="selectUserTaskMap" resultMap="UserMap"
+		parameterType="com.hongshan.pojo.User">
+		SELECT *
+		FROM user u LEFT JOIN user_relation r ON u.user_id = r.user_id 
+		LEFT JOIN task t ON r.user_relation_id =t.user_relation_id
+		<where>
+			<include refid="selectUserMapSQL" />
+		</where>
+	</select>
+
+	<sql id="selectUserMapSQL">
+		<if test="user_id != null and user_id != ''">
+			AND u.user_id = #{user_id}
+		</if>
+		<if test="role != null and role != ''">
+			AND u.role = #{role}
+		</if>
+		<if test="user_account != null and user_account != ''">
+			AND u.user_account LIKE '%${user_account}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			AND u.user_name LIKE '%${user_name}%'
+		</if>
+		<if test="user_islock != null and user_islock != ''">
+			AND u.user_islock LIKE '%${user_islock}%'
+		</if>
+		<if test="userRelations != null">
+			<foreach collection="userRelations" item="userRelation">
+				<if
+					test="userRelation.user_relation_id != null and userRelation.user_relation_id != ''">
+					AND r.user_relation_id = #{userRelation.user_relation_id}
+				</if>
+				<if test="userRelation.user_id != null and userRelation.user_id != ''">
+					AND r.user_id = #{userRelation.user_id}
+				</if>
+				<if
+					test="userRelation.user_parent_id != null and userRelation.user_parent_id !=''">
+					AND r.user_parent_id = #{userRelation.user_parent_id}
+				</if>
+				<if
+					test="userRelation.createtime != null and userRelation.createtime != ''">
+					AND r.createtime LIKE '%${userRelation.createtime}%'
+				</if>
+				<if test="userRelation.tasks != null">
+					<foreach collection="userRelation.tasks" item="task">
+						<if test="task.task_id != null and task.task_id != ''">
+							AND t.task_id = #{task.task_id}
+						</if>
+						<if
+							test="task.user_relation_id != null and task.user_relation_id != ''">
+							AND t.user_relation_id = #{task.user_relation_id}
+						</if>
+						<if
+							test="task.task_assigner_target != null and task.task_assigner_target != ''">
+							AND t.task_assigner_target = #{task.task_assigner_target}
+						</if>
+						<if
+							test="task.task_ideal_target != null and task.task_ideal_target != ''">
+							AND t.task_ideal_target = #{task.task_ideal_target}
+						</if>
+						<if
+							test="task.task_real_completion != null and task.task_real_completion != ''">
+							AND t.task_real_completion = #{task.task_real_completion}
+						</if>
+						<if test="task.createtime != null and task.createtime != ''">
+							AND t.createtime LIKE '%${task.createtime}%'
+						</if>
+					</foreach>
+				</if>
+			</foreach>
+		</if>
+	</sql>
+
+</mapper>
